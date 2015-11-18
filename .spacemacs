@@ -34,8 +34,8 @@ values."
      markdown
      org
      (shell :variables
-             shell-default-height 30
-             shell-default-position 'bottom)
+            shell-default-height 30
+            shell-default-position 'bottom)
      spell-checking
      (syntax-checking :variables syntax-checking-enable-by-default nil)
      (ibuffer :variables ibuffer-group-buffers-by nil)
@@ -46,9 +46,9 @@ values."
      semantic
      latex
      python
-     (spacemacs-layouts :variables layouts-enable-autosave t
-                        layouts-autosave-delay 300)
-
+     ;; (spacemacs-layouts :variables layouts-enable-autosave t
+     ;;                    layouts-autosave-delay 300)
+     eyebrowse
      zhexuany
      )
    ;; List of additional packages that will be installed without being
@@ -70,7 +70,7 @@ values."
 
 (defun dotspacemacs/init ()
   (setq-default
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    ;; dotspacemacs-verbose-loading nil
    dotspacemacs-startup-banner nil

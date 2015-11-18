@@ -86,3 +86,4 @@ EDITOR='vim'
 alias emacsapp='/Applications/Emacs.app/Contents/Macos/Emacs'
 alias e='/Applications/Emacs.app/Contents/MacOS/Emacs'
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+export PATH="/usr/local/sbin:$PATH"
