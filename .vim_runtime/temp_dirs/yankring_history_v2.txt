@@ -1,0 +1,100 @@
+Mac $ cd misc # I suppose you are in sim directory now.,v
+for ,v
+lab-handout/-rw-------  1 yzx 152K Nov 17 21:21 archlab.pdf,v
+We want to use huffman tree to represents n characters. This will give us a huffman tree with size2n − 1.,v
+# %rdi = src, %rsi = dst, %rdx = len,v
+E,v
+郑合惠子,v
+dpkg --get-selections | grep -v deinstall > ~/Desktop/packages,v
+graphexec/,v
+\**                                                 **\,V
+\**  CSELabs machine: kh4250-1                      **\,V
+\**  X500:     yang4442      &  xuxx1018            **\,V
+\**  ID:         5113787           &  5217324       **\,V
+\**	Student: Zhexuan Zachary Yang &  Xiufen Xu      **\,V
+/**  CSELabs machine: kh4250-1                      **/,V
+/**  X500:     yang4442      &  xuxx1018            **/,V
+/**  ID:         5113787           &  5217324       **/,V
+/**	Student: Zhexuan Zachary Yang &  Xiufen Xu      **/,V
+,V
+*/,V
+** Implementation for a less error-prone memory allocator.,V
+/*,V
+origin git@github.umn.edu:yang4442/graphexec.git,v
+CSCI4061-FALL-2015/graphexec,v
+=,v
+pick a5cdf1c push file to remote,V
+Fall-2015-CSCI-1913/1stass,v
+git@github.umn.edu:Fall-2015-CSCI-1913/3rdass.git,v
+        head = new Node<Key, Value> (null, null, null);,V
+ vijay070@umn.edu ,v
+    },V
+        return length*length;,V
+    public int area () {,V
+Assignment_3.zip,v
+https://github.umn.edu/yang4442/ARCHLAB-FALL-2015,v
+(spacemacs-layouts :variables layouts-enable-autosave t                        layouts-autosave-delay 300),V
+archlab.pdfHomework3.pdf,v
+UNION ($x_1$, $x_5$) \;,V
+// Program that demonstrates some simple stack/queue operationsimport java.util.*;public class StackQueue {    public static void main(String[] args) {        Queue<Integer> q = makeQueueOfMultiples(6, 3);        System.out.println("initial queue = " + q);        System.out.println("sum = " + sum(q));        System.out.println("after sum queue = " + q);        System.out.println();        Stack<Integer> s = new Stack<Integer>();        queueToStack(q, s);        System.out.println("after queueToStack:");        System.out.println("    queue = " + q);        System.out.println("    stack = " + s);        System.out.println();        s = makeStackOfMultiples(6, 5);        System.out.println("initial stack = " + s);        System.out.println("sum = " + sum(s));        System.out.println("after sum stack = " + s);        System.out.println();        stackToQueue(s, q);        System.out.println("after stackToQueue:");        System.out.println("    stack = " + s);        System.out.println("    queue = " + q);    }    // pre : count >= 0    // post: returns a queue of count multiples of n    public static Queue<Integer> makeQueueOfMultiples(int count, int n) {        Queue<Integer> q = new LinkedList<Integer>();        for (int i = 1; i <= count; i++)            q.add(i * n);        return q;    }    // pre : count >= 0    // post: returns a stack of count multiples of n    public static Stack<Integer> makeStackOfMultiples(int count, int n) {        Stack<Integer> s = new Stack<Integer>();        for (int i = 1; i <= count; i++)            s.push(i * n);        return s;    }    // post: Values from q moved to s (added in queue order, front to back);    //       q is empty    public static void queueToStack(Queue<Integer> q, Stack<Integer> s) {        while (!q.isEmpty()) {            int n = q.remove();            s.push(n);        }    }    // post: Values from s moved to q (added in stack order, top to bottom);    //       s is empty    public static void stackToQueue(Stack<Integer> s, Queue<Integer> q) {        while (!s.isEmpty()) {            int n = s.pop();            q.add(n);        }    }    // post: returns the sum of the values in q    public static int sum(Queue<Integer> q) {        int sum = 0;        for (int i = 0; i < q.size(); i++) {            int n = q.remove();            sum = sum + n;            q.add(n);        }        return sum;    }    // post: returns the sum of the values in s    public static int sum(Stack<Integer> s) {        int sum = 0;        Queue<Integer> q = new LinkedList<Integer>();        while (!s.isEmpty()) {            int n = s.pop();            sum = sum + n;            q.add(n);        }        queueToStack(q, s);        stackToQueue(s, q);        queueToStack(q, s);        return sum;    }},v
+Merge branch 'develop',V
+")                   ,v
+22.1-3,v
+pick d771b16 fix compile bug,V
+pick 90e5607 add zip file and ready to submit,V
+git rebase -i HEAD~5,v
+d,v
+        ,v
+IllegalArgumentException,v
+public ,v
+brew install emacs-mac --with-spacemacs-icon,v
+SmallMediumLarge,v
+waiverprerequisites@minneapolis.edu,v
+mE7YB0sX,v
+2374,v
+ ,v
+t,v
+r,v
+o,v
+p,v
+x,v
+e,v
+m,v
+i,v
+f,v
+#,v
+# else,V
+#   export EDITOR='vim',V
+# if [[ -n $SSH_CONNECTION ]]; then,V
+# Preferred editor for local and remote sessions,V
+ autojump,v
+ nyan,v
+ command-not-found,v
+ brew,v
+ruby,v
+rails,v
+plugins=(rails git ruby brew command-not-found nyan autojump ),V
+l,v
+s,v
+u,v
+y,v
+b,v
+bira,v
+>>>>>>> fde6c60baee745adb5fdea410018e7943ad0aaf5,V
+=======,V
+                                    ("gg" . "github/gist"))),V
+(setq github/key-binding-prefixes '(("gf" . "github/file"),V
+<<<<<<< HEAD,V
+layers/+source-control/github/config.el,v
+        "mcn"  'markdown-cleanup-list-numbers,V
+        "mcc"  'markdown-check-refs,V
+layers/+lang/markdown/packages.el,v
+           [?\C-c ?\C-z] 'haskell-interactive-switch))))),V
+        '(define-key haskell-cabal-mode-map,V
+      (eval-after-load 'haskell-cabal-mode-map,V
+layers/+lang/haskell/packages.el,v
+(defconst spacemacs-version          "0.104.4" "Spacemacs version."),V
+ init.el,v
+*** Why do the fonts look crappy on Windows ?,V
+** Windows,V
+ =+distribution= folder of the =layers/= directory.,V
