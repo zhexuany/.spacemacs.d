@@ -1,58 +1,164 @@
-;;; packages.el --- zhexuany Layer packages File for Spacemacs
-;;
-;; Copyright (c) 2015-2016 zhexuany 
-;;
-;; Author: zhexuany
-;; URL: https://github.com/zhexuany/
-;;
-;; This file is not part of GNU Emacs.
-;;
-;;; License: GPLv3
-
-;; List of all packages to install and/or initialize. Built-in packages
-;; which require an initialization must be listed explicitly in the list.
 (setq zhexuany-packages
       '(
-        ;; package names go here
-        discover-my-major
+        lispy
+        company
+        markdown-mode
         impatient-mode
-        swiper
-        ;; ox-reveal
-;;        helm-flyspell
-        helm
-        ace-window
-        ;; helm-ls-git
-        ;; mwe-log-commands
-        flycheck-package
-        ;; deft
+        keyfreq
+        visual-regexp
+        visual-regexp-steroids
+        persp-mode
         hungry-delete
-        multiple-cursors
-        ;; persp-mode
+        ;; flyspell
+        find-file-in-project
+        wrap-region
+        ;; tagedit
+        ;; js-comint
+        ctags-update
+        evil-vimish-fold
+        beacon
+        evil-visual-mark-mode
+        (occur-mode :location built-in)
+        erc
         ))
 
-
-(defun zhexuany/post-init-hungry-delete ()
-  (add-hook 'prog-mode-hook 'hungry-delete-mode)
+(defun zhexuany/post-init-erc ()
+  (defun my-erc-hook (match-type nick message)
+    "Shows a growl notification, when user's nick was mentioned. If the buffer is currently not visible, makes it sticky."
+    (unless (posix-string-match "^\\** *Users on #" message)
+      (zhexuany/growl-notification
+       (concat "ERC: : " (buffer-name (current-buffer)))
+       message
+       t
+       )))
+  (add-hook 'erc-text-matched-hook 'my-erc-hook)
+  (spaceline-toggle-erc-track-off)
   )
 
-(defun zhexuany/init-discover-my-major ()
-  (use-package discover-my-major
-    :defer t
+(defun zhexuany/init-occur-mode ()
+  (defun occur-dwim ()
+    "Call `occur' with a sane default."
+    (interactive)
+    (push (if (region-active-p)
+              (buffer-substring-no-properties
+               (region-beginning)
+               (region-end))
+            (let ((sym (thing-at-point 'symbol)))
+              (when (stringp sym)
+                (regexp-quote sym))))
+          regexp-history)
+    (call-interactively 'occur))
+  (bind-key* "M-s o" 'occur-dwim)
+  (evilified-state-evilify occur-mode occur-mode-map
+    "RET" 'occur-mode-goto-occurrence))
+
+(defun zhexuany/init-evil-visual-mark-mode ()
+  (use-package evil-visual-mark-mode
     :init
     (progn
-      (evil-leader/set-key (kbd "mhm") 'discover-my-major)
-      (evilify makey-key-mode makey-key-mode-get-key-map)
-      )))
+      (spacemacs|add-toggle evil-visual-mark-mode
+        :status evil-visual-mark-mode
+        :on (evil-visual-mark-mode)
+        :off (evil-visual-mark-mode -1)
+        :documentation "Show evil marks"
+        :evil-leader "otm")
+      (evil-visual-mark-mode))))
+
+(defun zhexuany/init-beacon ()
+  (use-package beacon
+    :init
+    (progn
+      (spacemacs|add-toggle beacon
+        :status beacon-mode
+        :on (beacon-mode)
+        :off (beacon-mode -1)
+        :documentation "Enable point highlighting after scrolling"
+        :evil-leader "otb")
+      (spacemacs/toggle-beacon-on))
+    :config (spacemacs|hide-lighter beacon-mode)))
 
 
-(defun zhexuany/post-init-flycheck ()
-  (use-package flycheck
+(defun zhexuany/init-evil-vimish-fold ()
+  (use-package evil-vimish-fold
+    :init
+    (vimish-fold-global-mode 1)))
+
+(defun zhexuany/init-ctags-update ()
+  (use-package ctags-update
+    :init
+    (progn
+      ;; (add-hook 'js2-mode-hook 'turn-on-ctags-auto-update-mode)
+      (define-key evil-normal-state-map (kbd "gf")
+        (lambda () (interactive) (find-tag (find-tag-default-as-regexp))))
+
+      (define-key evil-normal-state-map (kbd "gb") 'pop-tag-mark)
+
+      (define-key evil-normal-state-map (kbd "gn")
+        (lambda () (interactive) (find-tag last-tag t)))
+      )
     :defer t
-    :config (progn
-              (flycheck-package-setup)
-              (setq flycheck-display-errors-function 'flycheck-display-error-messages)
-              (setq flycheck-display-errors-delay 0.2))))
+    :config
+    (spacemacs|hide-lighter ctags-auto-update-mode)))
 
+(defun zhexuany/init-wrap-region ()
+  (use-package wrap-region
+    :init
+    (progn
+      (wrap-region-global-mode t)
+      (wrap-region-add-wrappers
+       '(("$" "$")
+         ("{-" "-}" "#")
+         ("/" "/" nil ruby-mode)
+         ("/* " " */" "#" (java-mode javascript-mode css-mode js2-mode))
+         ("`" "`" nil (markdown-mode ruby-mode))))
+      (add-to-list 'wrap-region-except-modes 'dired-mode)
+      (add-to-list 'wrap-region-except-modes 'web-mode)
+      )
+    :defer t
+    :config
+    (spacemacs|hide-lighter wrap-region-mode)))
+
+(defun zhexuany/init-find-file-in-project ()
+  (use-package find-file-in-project
+    :defer t
+    :init))
+
+(defun zhexuany/post-init-hungry-delete ()
+  ;; (add-hook 'prog-mode-hook 'hungry-delete-mode)
+  (global-hungry-delete-mode t)
+  )
+
+(defun zhexuany/init-visual-regexp-steroids ()
+  (use-package visual-regexp-steroids
+    :init))
+
+(defun zhexuany/init-visual-regexp ()
+  (use-package visual-regexp
+    :init))
+
+
+
+(defun zhexuany/init-lispy ()
+  "Initialize lispy"
+  (use-package lispy
+    :defer t
+    :diminish (lispy-mode)
+    :init
+    (progn
+      (add-hook 'lispy-mode-hook 'spacemacs/toggle-aggressive-indent-on)
+      (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
+      (add-hook 'spacemacs-mode-hook (lambda () (lispy-mode 1)))
+      (add-hook 'clojure-mode-hook (lambda () (lispy-mode 1)))
+      (add-hook 'scheme-mode-hook (lambda () (lispy-mode 1)))
+      (add-hook 'cider-repl-mode-hook (lambda () (lispy-mode 1))))))
+
+
+(defun zhexuany/post-init-company ()
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.08)
+  (when (configuration-layer/package-usedp 'company)
+    (spacemacs|add-company-hook lua-mode)
+    (spacemacs|add-company-hook nxml-mode)))
 
 ;; configs for writing
 (defun zhexuany/post-init-markdown-mode ()
@@ -60,166 +166,22 @@
     :defer t
     :config
     (progn
+      (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
       (when (configuration-layer/package-usedp 'company)
-        ;; (spacemacs|add-company-hook markdown-mode)
-        )
+        (spacemacs|add-company-hook markdown-mode))
       (defun zhexuany/markdown-to-html ()
         (interactive)
         (start-process "grip" "*gfm-to-html*" "grip" (buffer-file-name))
         (browse-url (format "http://localhost:5000/%s.%s" (file-name-base) (file-name-extension (buffer-file-name)))))
 
       (evil-leader/set-key-for-mode 'gfm-mode-map
-        "mp" 'zhexuany/markdown-to-html)
+        "p" 'zhexuany/markdown-to-html)
       (evil-leader/set-key-for-mode 'markdown-mode
-        "mp" 'zhexuany/markdown-to-html)
-      )))
+        "p" 'zhexuany/markdown-to-html))))
 
-
-
-(defun zhexuany/init-mwe-log-commands ()
-  (use-package mwe-log-commands
+(defun zhexuany/init-keyfreq ()
+  (use-package keyfreq
     :init
     (progn
-      (evil-leader/set-key
-        "oll" 'mwe:log-keyboard-commands
-        "olf" 'mwe:open-command-log-buffer))))
-
-(defun zhexuany/init-swiper ()
-  "Initialize my package"
-  (use-package swiper
-    :init
-    (progn
-      (setq ivy-display-style 'fancy)
-
-      ;; http://oremacs.com/2015/04/16/ivy-mode/
-      ;; (ivy-mode -1)
-      ;; (setq magit-completing-read-function 'ivy-completing-read)
-
-      ;; http://oremacs.com/2015/04/19/git-grep-ivy/
-      (defun counsel-git-grep-function (string &optional _pred &rest _u)
-        "Grep in the current git repository for STRING."
-        (split-string
-         (shell-command-to-string
-          (format
-           "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
-           string))
-         "\n"
-         t))
-
-      (defun counsel-git-grep ()
-        "Grep for a string in the current git repository."
-        (interactive)
-        (let ((default-directory (locate-dominating-file
-                                  default-directory ".git"))
-              (val (ivy-read "pattern: " 'counsel-git-grep-function))
-              lst)
-          (when val
-            (setq lst (split-string val ":"))
-            (find-file (car lst))
-            (goto-char (point-min))
-            (forward-line (1- (string-to-number (cadr lst)))))))
-      (use-package ivy
-        :defer t
-        :config
-        (progn
-          (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-          (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
-
-      (define-key global-map (kbd "C-s") 'swiper)
-      (setq ivy-use-virtual-buffers t)
-      (global-set-key (kbd "C-c C-r") 'ivy-resume)
-      (global-set-key (kbd "C-c j") 'counsel-git-grep))))
-
-
-
-
-(defun zhexuany/post-init-helm-flyspell ()
-  (use-package helm-flyspell
-    :commands helm-flyspell-correct
-    :init
-    ;; "http://emacs.stackexchange.com/questions/14909/how-to-use-flyspell-to-efficiently-correct-previous-word/14912#14912"
-    (defun zhexuany/flyspell-goto-previous-error (arg)
-      "Go to arg previous spelling error."
-      (interactive "p")
-      (while (not (= 0 arg))
-        (let ((pos (point))
-              (min (point-min)))
-          (if (and (eq (current-buffer) flyspell-old-buffer-error)
-                   (eq pos flyspell-old-pos-error))
-              (progn
-                (if (= flyspell-old-pos-error min)
-                    ;; goto beginning of buffer
-                    (progn
-                      (message "Restarting from end of buffer")
-                      (goto-char (point-max)))
-                  (backward-word 1))
-                (setq pos (point))))
-          ;; seek the next error
-          (while (and (> pos min)
-                      (let ((ovs (overlays-at pos))
-                            (r '()))
-                        (while (and (not r) (consp ovs))
-                          (if (flyspell-overlay-p (car ovs))
-                              (setq r t)
-                            (setq ovs (cdr ovs))))
-                        (not r)))
-            (backward-word 1)
-            (setq pos (point)))
-          ;; save the current location for next invocation
-          (setq arg (1- arg))
-          (setq flyspell-old-pos-error pos)
-          (setq flyspell-old-buffer-error (current-buffer))
-          (goto-char pos)
-          (call-interactively 'helm-flyspell-correct)
-          (if (= pos min)
-              (progn
-                (message "No more miss-spelled word!")
-                (setq arg 0))))))
-
-    (bind-key* "C-," 'zhexuany/flyspell-goto-previous-error)
-    (global-set-key (kbd "C-c s") 'helm-flyspell-correct)))
-
-
-(defun zhexuany/post-init-ace-window ()
-  (use-package ace-window
-    :defer t
-    :init
-    (global-set-key (kbd "C-x C-o") #'ace-window)))
-
-
-(defun zhexuany/init-helm-ls-git ()
-  (use-package helm-ls-git
-    :defer t
-    :init
-    :config
-    (setq helm-ls-git-show-abs-or-relative 'relative)))
-
-
-(defun zhexuany/init-ox-reveal ()
-  (use-package ox-reveal
-    :defer t
-    :init
-    (progn
-      (setq org-reveal-root "file:///Users/zhexuany/.emacs.d/reveal-js"))))
-
-(defun zhexuany/init-worf ()
-  (use-package worf
-    :defer t
-    :init
-    (add-hook 'org-mode-hook 'worf-mode)))
-
-(defun zhexuany/init-org-download ()
-  (use-package org-download
-    :defer t
-    :init
-    (org-download-enable)))
-
-
-(defun zhexuany/post-init-deft ()
-  (setq deft-use-filter-string-for-filename t)
-  (evil-leader/set-key-for-mode 'deft-mode "mq" 'quit-window)
-  (setq deft-extension "org")
-  (setq deft-directory "~/Dropbox/ORG"))
-
-(defun zhexuany/post-init-popwin ()
-  (push "*zhexuany/run-current-file output*" popwin:special-display-config))
+      (keyfreq-mode t)
+      (keyfreq-autosave-mode 1))))
