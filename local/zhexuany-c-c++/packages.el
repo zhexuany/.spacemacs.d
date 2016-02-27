@@ -53,7 +53,7 @@
 
       (add-hook 'cmake-mode-hook (function cmake-rename-buffer)))))
 
-(defun zhexuany/init-flycheck-package ()
+(defun zhexuan-c-c++/init-flycheck-package ()
   (use-package flycheck-package))
 
 (defun zhexuany-c-c++/post-init-flycheck ()
