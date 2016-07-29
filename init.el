@@ -39,8 +39,8 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     spacemacs-helm
-     spacemacs-ivy
+     helm
+     ivy
      (
       auto-completion
       :variables
@@ -62,14 +62,10 @@ values."
           ;; This is really creepy magit
           magit-revision-show-gravatars nil
           )
-     nixos
-     prodigy
-     cscope
      github
-     (colors :variables
-             colors-enable-nyan-cat-progress-bar t)
+     colors
      markdown
-     org
+     ;;org
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
@@ -81,26 +77,13 @@ values."
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)
      common-lisp
-     java
+     ;; java
      (vinegar :variables vinegar-reuse-dired-buffer t)
      (spacemacs-layouts :variables layouts-enable-autosave t
                         layouts-autosave-delay 300)
-     (clojure :variables clojure-enable-fancify-symbols t)
+     ;; (clojure :variables clojure-enable-fancify-symbols t)
      evil-commentary
      python
-     scheme
-     ;; Peosonal layeres
-   ;  zhexuany
-     ;zhexuany-yasnippet
-     ;; using spacemacs-ivy mode now, no need to enbale personal layer: zhexuany-swiper
-     ;; zhexuany-swipper
-   ;  zhexuany-whitespace
-     ;;zhexuany-c-c++
-     ;; ;; zhexuany-js
-     ;; zhexuany-dired
-     zhexuany-git
-     zhexuany-helm
-   ;  zhexuany-org
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -158,7 +141,7 @@ values."
    ;; This variable has no effect if Emacs is launched with the parameter
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
-   dotspacemacs-elpa-https t
+   dotspacemacs-elpa-https nil
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
@@ -193,8 +176,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         solarized-light
                          monokai
+                         solarized-light
                          spacemacs-dark
                          spacemacs-light
                          solarized-dark
@@ -350,8 +333,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq eclim-eclipse-dirs "~/Applications/Eclipse.app/Contents/Eclipse"
         eclim-executable "~/Applications/Eclipse.app/Contents/Eclipse/eclim"
         )
-
-
   )
 
 (defun dotspacemacs/user-config ()
