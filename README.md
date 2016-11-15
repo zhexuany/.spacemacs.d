@@ -1,4 +1,6 @@
-# Private directory
+#Introduction
+This is just a personal configuration for spacemacs. 
+## Private directory
 
 The content of this directory is ignored by Git. This is the default place
 where to store your private configuration layers.
