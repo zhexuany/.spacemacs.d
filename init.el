@@ -39,6 +39,7 @@
      (spell-checking :variables spell-checking-enable-by-default nil)
      (ibuffer :variables ibuffer-group-buffers-by nil)
      version-control
+     semantic
      gtags
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)

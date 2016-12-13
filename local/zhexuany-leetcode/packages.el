@@ -2,11 +2,54 @@
       '(
         request
         json
-        cl
-        ))
+        cl))
+
 (defconst leetcode-base-domain "leetcode.com")
 (defconst leetcode-base-url (concat "https://" leetcode-base-domain))
-(defconst leetcode-action-login "acounts/login/"                       ("[Easy] /problems/merge-two-sorted-lists/" 21)
+(defconst leetcode-action-login "acounts/login/")
+(defconst leetcode-action-logout "accounts/logout/")
+
+(defconst leetcode-request-header
+  `(("Referer" . ,leetcode-base-url)
+    ("Host" . ,leetcode-base-domain)
+    ("User-Agent" . "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0")))
+(defconst leetcode-csrf-key "csrfmiddlewaretoken")
+(defconst leetcode-csrf-cookie-key "csrftoken")
+(defconst leetcode-quest-cleaner "\\(\\[\[^\\]+?\]\s\\)")
+(defconst leetcode-status-map
+  '((10 "AC" )
+    (11 "WA" )
+    (12 "MLE" )
+    (13 "OLE" )
+    (14 "TLE" )
+    (15 "RE" )
+    (16 "IE" )
+    (20 "CE" )
+    (21 "UE" )))
+(defvar leetcode-default-lang "java" "Your prefered programming language.")
+
+(defvar *leetcode-last-submission-id* nil)
+
+;;; url-retrieve is good at dealing with cookie
+(setq request-backend 'url-retrieve)
+
+
+(defun leetcode--file-to-string (file)
+  "Read the content of FILE and return it as a string."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (buffer-string)))
+
+(defun leetcode--get-cookie-val (key)
+  "Get cookie value by KEY."
+  (cdr
+   (assoc
+    key
+    (request-cookie-alist
+     leetcode-base-domain "/" t))))
+
+(defconst leetcode-quests '(
+                            ("[Easy] /problems/merge-two-sorted-lists/" 21)
                             ("[Medium] /problems/generate-parentheses/" 22)
                             ("[Hard] /problems/merge-k-sorted-lists/" 23)
                             ("[Easy] /problems/swap-nodes-in-pairs/" 24)
@@ -443,7 +486,7 @@
     (read-passwd "input password ")))
 
   (unless (leetcode-is-loggedin)
-    (leetcode--resh-request)
+    (leetcode--fresh-request)
     (request (concat leetcode-base-url "/" leetcode-action-login)
              :type "POST"
              :data `(("login" . ,uname)
@@ -466,39 +509,40 @@
 
 (defun leetcode--submit
     (content &optional qname qid &key (type "large") (lang leetcode-default-lang))
-             (assert (leetcode--is-loggedin) t "login first")
-             (unless (and qname qid)
-               (let ((quest
-                      (assoc
-                       (completing-read "choose quest: " leetcode-quests nil t)
-                       leetcode-quests )))
-                 (if quest
-                     (setq qname (car quest) qid (cadr quest))
-                   (error "invalid quest"))))
-             (request
-              (concat
-               leetcode-base-url
-               (replace-regexp-in-string leetcode-quest-cleaner "" qname)
-               "/submit/")
-              :type "POST"
-              :data `((. leetcode-code-csrf-key .
-                         ,(leetcode--get-cookie-val
-                           (leetcode-csrf-cookie-key))
-                         ("lang" . ,lang)
-                         ("data_input" . "")
-                         ("question_id" . ,(number-tostring qid))
-                         ("judge_type" . ,type)
-                         ("typed_code" . ,content)
-                         )
-              :headers leetcode-request-header
-              :parser 'json-read
-              :success
-              (function* ((lambda (&key data &allow-other-keys)
-                            "DOCSTRING"
-                            (setq *leetcode-last-submission-id*)
-                            (number-to-string
-                             (cdr (assoc 'submission_id data))))
-                          (leetcode--check-submission))))))
+  (assert (leetcode--is-loggedin) t "login first")
+  (unless (and qname qid)
+    (let ((quest
+           (assoc
+            (completing-read "choose quest: " leetcode-quests nil t)
+            leetcode-quests )))
+      (if quest
+          (setq qname (car quest) qid (cadr quest))
+        (error "invalid quest"))))
+
+  (request
+   (concat
+    leetcode-base-url
+    (replace-regexp-in-string leetcode-quest-cleaner "" qname)
+    "/submit/")
+   :type "POST"
+   :data `((, leetcode-csrf-key .
+                                ,(leetcode--get-cookie-val
+                                  leetcode-csrf-cookie-key))
+           ("lang" . ,lang)
+           ("data_input" . "")
+           ("question_id" . ,(number-tostring qid))
+           ("judge_type" . ,type)
+           ("typed_code" . ,content)
+           )
+   :headers leetcode-request-header
+   :parser 'json-read
+   :success
+   (function* ((lambda (&key data &allow-other-keys)
+                 "DOCSTRING"
+                 (setq *leetcode-last-submission-id*)
+                 (number-to-string
+                  (cdr (assoc 'submission_id data))))
+               (leetcode--check-submission)))))
 
 
 (defun leetcode--submit-region (start end)
@@ -556,7 +600,7 @@
       (setq code-obj (json-read))
       )
     (when (not (stringp code-obj))
-      (let ((cpp-entry            
+      (let ((cpp-entry
              (car (delq nil
                         (mapcar (lambda (entry)
                                   (and
@@ -579,11 +623,11 @@
         (goto-char (point-min))
         (when (re-search-forward content-re nil t)
           (setq info (match-string-no-properties 1)))
-      
+
         (while (re-search-forward tag-re nil t)
           (setq tags
                 (concat tags " " (match-string-no-properties 1))))))
-    
+
     (concat info tags)))
 
 (defun leetcode--display-info (qname)
@@ -609,10 +653,10 @@
          (end (+ start (length info))))
     (save-excursion
       (goto-char start)
-      (insert info)      
+      (insert info)
       (comment-region start end)
       (newline)
-;      (fill-region start (point))
+                                        ;      (fill-region start (point))
       (when (y-or-n-p "insert code template? ")
         (insert (leetcode--parse-code data))
         (newline)))))
@@ -621,5 +665,5 @@
   "Show quests."
   (interactive)
   (completing-read
-     "question: "
-     leetcode-quests nil t))
+   "question: "
+   leetcode-quests nil t))
