@@ -22,15 +22,13 @@
       :disabled-for org erc
       )
      emacs-lisp
-     (
-      git :variables
+     ( git :variables
           git-magit-status-fullscreen t
           magit-push-always-verify nil
           magit-save-repository-buffers 'dontask
           magit-revert-buffers 'silent
           magit-refs-show-commit-count 'all
-          magit-revision-show-gravatars nil
-          )
+          magit-revision-show-gravatars nil)
      github
      colors
      markdown
@@ -55,7 +53,7 @@
      )
    dotspacemacs-additional-packages '()
    dotspacemacs-excluded-packages '(
- git-gutter
+                                    git-gutter
                                     magit-gh-pulls
                                     magit-gitflow
                                     evil-mc
@@ -148,10 +146,11 @@
    ))
 
 (defun dotspacemacs/user-init ()
-    (setq exec-path-from-shell-arguments '("-l"))
+    ;; (setq exec-path-from-shell-arguments '("-l"))
   )
 
 (defun dotspacemacs/user-config ()
+  (exec-path-from-shell-copy-env "GOPATH")
     )
 
 (custom-set-variables
