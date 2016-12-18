@@ -1,8 +1,16 @@
 (setq zhexuany-leetcode-packages
       '(
         request
-        json
-        cl))
+        json))
+
+(defun zhexuany-leetcode/init-json ()
+  (require 'json))
+
+
+(defun zhexuany-leetcode/init-request()
+  (require 'request))
+
+(eval-when-compile (require 'cl))
 
 (defconst leetcode-base-domain "leetcode.com")
 (defconst leetcode-base-url (concat "https://" leetcode-base-domain))
@@ -13,7 +21,14 @@
   `(("Referer" . ,leetcode-base-url)
     ("Host" . ,leetcode-base-domain)
     ("User-Agent" . "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0")))
-(defconst leetcode-csrf-key "csrfmiddlewaretoken")
+(defconst leetcode-login-request-header
+    `(("Referer" . ,(concat leetcode-base-url "/" leetcode-action-login))
+      ("Origin" . ,leetcode-base-url)
+      ;; ("Upgrade-Insecure-Requests" . "1")
+      ("User-Agent" . "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0")))
+
+
+(defconst leetcode-csrf-key  "csrfmiddlewaretoken")
 (defconst leetcode-csrf-cookie-key "csrftoken")
 (defconst leetcode-quest-cleaner "\\(\\[\[^\\]+?\]\s\\)")
 (defconst leetcode-status-map
@@ -485,21 +500,21 @@
     (read-string "input username or email ")
     (read-passwd "input password ")))
 
-  (unless (leetcode-is-loggedin)
+  (unless (leetcode--is-loggedin)
     (leetcode--fresh-request)
     (request (concat leetcode-base-url "/" leetcode-action-login)
              :type "POST"
              :data `(("login" . ,uname)
                      ("password" . ,pwd)
-                     ("Host" . ,leetcode-base-domain)
-                     (, leetcode-csrf-key.
-                        , (leetcode--get-cookie-val
-                           leetcode-csrf-cookie-key)))
-             :headers leetcode-request-header)))
+                     ;; ("Host" . ,leetcode-base-domain)
+                     (,leetcode-csrf-key .
+                                         ,(leetcode--get-cookie-val
+                                           leetcode-csrf-cookie-key)))
+             :headers leetcode-login-request-header)))
 
 (defun leetcode--is-loggedin ()
   "Detect login state by phpsessid"
-  (leetcode--get-cokie-val "PHPSESSID"))
+  (leetcode--get-cookie-val "PHPSESSID"))
 
 (defun leetcode--logout ()
   (interactive)
@@ -525,9 +540,9 @@
     (replace-regexp-in-string leetcode-quest-cleaner "" qname)
     "/submit/")
    :type "POST"
-   :data `((, leetcode-csrf-key .
-                                ,(leetcode--get-cookie-val
-                                  leetcode-csrf-cookie-key))
+   :data `((, leetcode-csrf-key  .
+                                 ,(leetcode--get-cookie-val
+                                   leetcode-csrf-cookie-key))
            ("lang" . ,lang)
            ("data_input" . "")
            ("question_id" . ,(number-tostring qid))
