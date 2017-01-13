@@ -1,1 +1,1 @@
-ln -s $(pwd)/../spacemacs-config ~/.spacemacs.d
+ln -s $(pwd) ~/.spacemacs.d
