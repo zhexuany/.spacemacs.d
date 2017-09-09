@@ -7,12 +7,14 @@
    dotspacemacs-configuration-layer-path '()
    dotspacemacs-configuration-layers
    '(
+     scala
+     java
      osx
-     php
-     javascript
+     ;; php
+     ;; javascript
      rust
-     nginx
-     html
+     ;; nginx
+     ;; html
      yaml
      ;; helm
      ivy
